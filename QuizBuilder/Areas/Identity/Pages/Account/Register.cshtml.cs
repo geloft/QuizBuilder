@@ -19,6 +19,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Logging;
 using QuizBuilder.Data.Entities;
+using QuizBuilder.Models;
 
 namespace QuizBuilder.Areas.Identity.Pages.Account
 {
