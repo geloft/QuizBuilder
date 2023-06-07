@@ -1,0 +1,57 @@
+﻿@using Microsoft.AspNetCore.Identity
+@using QuizBuilder.Data.Entities
+@model string
+
+<style>
+    table {
+        width: 100%;
+    }
+
+    th {
+        padding: 10px;
+    }
+
+    td {
+        padding: 5px;
+    }
+</style>
+
+<h2>Search Users</h2>
+
+@using (Html.BeginForm("Search", "Admin"))
+{
+    <label for="email">Email:</label>
+    <input type="text" name="email" />
+    <input type="submit" value="Search" />
+}
+
+@if (!string.IsNullOrEmpty(Model))
+{
+    <h3>Search Results:</h3>
+    <p>Email: @Model</p>
+    <a href="@Url.Action("AssignRole", "Admin", new { userId = Model })">Assign Role</a>
+}
+
+<<h3>All Users and Roles:</h3>
+<table>
+    <tr>
+        <th>Email</th>
+        <th>First Name</th>
+        <th>Last Name</th>
+        <th>Role</th>
+        <th>Action</th>
+    </tr>
+    @foreach (var user in ViewBag.Users)
+    {
+        <tr>
+            <td>@user.Email</td>
+            <td>@user.FirstName</td>
+            <td>@user.LastName</td>
+            <td>@string.Join(", ", await ((UserManager<ApplicationUser>)ViewBag.UserManager).GetRolesAsync(user))</td>
+            <td>
+                <a href="@Url.Action("AssignRole", "Admin", new { userId = user.Id })">Assign Role</a>
+            </td>
+        </tr>
+        <tr style="border-bottom: 1px solid #ccc;"></tr>
+    }
+</table>

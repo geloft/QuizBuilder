@@ -1,0 +1,20 @@
+﻿@using QuizBuilder.Data.Entities
+@model ApplicationUser
+
+<h2>Assign Role</h2>
+
+<p>Email: @Model.Email</p>
+<p>First Name: @Model.FirstName</p>
+<p>Last Name: @Model.LastName</p>
+
+@using (Html.BeginForm("AssignRole", "Admin"))
+{
+    <input type="hidden" name="userId" value="@Model.Id" />
+    <select name="roleName">
+        @foreach (var role in ViewBag.Roles)
+        {
+           <option value="@role.Name" selected="@((role.Name == ViewBag.CurrentRole).ToString().ToLower())">@role.Name</option>
+        }
+    </select>
+    <input type="submit" value="Assign" />
+}
