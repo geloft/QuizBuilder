@@ -10,10 +10,11 @@ using Microsoft.EntityFrameworkCore;
 using QuizBuilder.Data;
 using QuizBuilder.Data.Entities;
 using QuizBuilder.ViewModels;
+using QuizBuilder.ViewModels.Subject;
 
 namespace QuizBuilder.Controllers
 {
-    [Authorize(Roles ="Admin, Teacher")]
+    [Authorize(Roles = "Admin, Teacher")]
     public class TeacherController : Controller
     {
         private readonly ApplicationDbContext _dbContext;
@@ -101,16 +102,22 @@ namespace QuizBuilder.Controllers
             {
                 return NotFound();
             }
-            ViewData["TeacherId"] = new SelectList(_dbContext.Users, "Id", "Id", subject.TeacherId);
-            return View(subject);
+
+            var subjectModel = new SubjectEditViewModel
+            {
+                Id = subject.Id,
+                Name = subject.Name,
+                Password = subject.Password
+            };
+            return View(subjectModel);
         }
 
         // POST: Teacher/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Password,TeacherId")] Subject subject)
+        public async Task<IActionResult> Edit(int id, SubjectEditViewModel subjectModel)
         {
-            if (id != subject.Id)
+            if (id != subjectModel.Id)
             {
                 return NotFound();
             }
@@ -119,12 +126,23 @@ namespace QuizBuilder.Controllers
             {
                 try
                 {
+                    var subject = await _dbContext.Subjects.FindAsync(id);
+                    if (subject == null)
+                    {
+                        return NotFound();
+                    }
+
+                    subject.Name = subjectModel.Name;
+                    subject.Password = subjectModel.Password;
+
                     _dbContext.Update(subject);
                     await _dbContext.SaveChangesAsync();
+
+                    return RedirectToAction(nameof(Index));
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!SubjectExists(subject.Id))
+                    if (!SubjectExists(subjectModel.Id))
                     {
                         return NotFound();
                     }
@@ -133,11 +151,12 @@ namespace QuizBuilder.Controllers
                         throw;
                     }
                 }
-                return RedirectToAction(nameof(Index));
             }
-            ViewData["TeacherId"] = new SelectList(_dbContext.Users, "Id", "Id", subject.TeacherId);
-            return View(subject);
+
+            return View(subjectModel);
         }
+
+
 
         // GET: Teacher/Delete/5
         public async Task<IActionResult> Delete(int? id)
@@ -172,14 +191,14 @@ namespace QuizBuilder.Controllers
             {
                 _dbContext.Subjects.Remove(subject);
             }
-            
+
             await _dbContext.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
         private bool SubjectExists(int id)
         {
-          return (_dbContext.Subjects?.Any(e => e.Id == id)).GetValueOrDefault();
+            return (_dbContext.Subjects?.Any(e => e.Id == id)).GetValueOrDefault();
         }
     }
 }

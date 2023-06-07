@@ -1,6 +1,6 @@
-﻿using Microsoft.Build.Framework;
+﻿using System.ComponentModel.DataAnnotations;
 
-namespace QuizBuilder.ViewModels
+namespace QuizBuilder.ViewModels.Subject
 {
     public class SubjectCreateViewModel
     {
