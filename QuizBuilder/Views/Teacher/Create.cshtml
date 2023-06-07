@@ -1,4 +1,4 @@
-﻿@model QuizBuilder.Data.Entities.Subject
+﻿@model QuizBuilder.ViewModels.SubjectCreateViewModel
 
 @{
     ViewData["Title"] = "Create";
@@ -22,10 +22,6 @@
                 <label asp-for="Password" class="control-label"></label>
                 <input asp-for="Password" class="form-control" />
                 <span asp-validation-for="Password" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="TeacherId" class="control-label"></label>
-                <select asp-for="TeacherId" class ="form-control" asp-items="ViewBag.TeacherId"></select>
             </div>
             <div class="form-group">
                 <input type="submit" value="Create" class="btn btn-primary" />
