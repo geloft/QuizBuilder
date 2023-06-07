@@ -15,46 +15,61 @@ namespace QuizBuilder.Controllers
             _roleManager = roleManager;
         }
 
-        // GET: /User/AssignRole
-        public IActionResult AssignRole()
+        // GET: /Admin/Search
+        public IActionResult Search()
         {
             var users = _userManager.Users.ToList();
-            ViewBag.Roles = _roleManager.Roles.ToList();
-            return View(users);
+            var roles = _roleManager.Roles.ToList();
+
+            ViewBag.Users = users;
+            ViewBag.Roles = roles;
+            ViewBag.UserManager = _userManager;
+
+            return View();
         }
 
-        // POST: /User/AssignRole
+
+        // POST: /Admin/Search
+        [HttpPost]
+        public async Task<IActionResult> Search(string email)
+        {
+            var user = await _userManager.FindByEmailAsync(email);
+            if (user != null)
+            {
+                return RedirectToAction("AssignRole", new { userId = user.Id });
+            }
+
+            return View("UserNotFound");
+        }
+
+        // GET: /Admin/AssignRole
+        public async Task<IActionResult> AssignRole(string userId)
+        {
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user != null)
+            {
+                var userRoles = await _userManager.GetRolesAsync(user);
+                ViewBag.Roles = _roleManager.Roles.ToList();
+                ViewBag.CurrentRole = userRoles.FirstOrDefault();
+                return View(user);
+            }
+
+            return View("UserNotFound");
+        }
+
+        // POST: /Admin/AssignRole
         [HttpPost]
         public async Task<IActionResult> AssignRole(string userId, string roleName)
         {
             var user = await _userManager.FindByIdAsync(userId);
             if (user != null)
             {
-                // Remove all existing roles
                 var existingRoles = await _userManager.GetRolesAsync(user);
                 await _userManager.RemoveFromRolesAsync(user, existingRoles);
-
-                // Assign the new role
                 await _userManager.AddToRoleAsync(user, roleName);
             }
 
-            return RedirectToAction("AssignRole");
-        }
-
-        // GET: /User/Search
-        public IActionResult Search()
-        {
-            ViewBag.Roles = _roleManager.Roles.ToList();
-            return View();
-        }
-
-        // POST: /User/Search
-        [HttpPost]
-        public async Task<IActionResult> Search(string email)
-        {
-            var user = await _userManager.FindByEmailAsync(email);
-            ViewBag.Roles = _roleManager.Roles.ToList();
-            return View("SearchResult", user);
+            return RedirectToAction("Search");
         }
     }
 }
