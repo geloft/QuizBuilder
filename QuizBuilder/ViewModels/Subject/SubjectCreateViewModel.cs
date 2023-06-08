@@ -7,6 +7,8 @@ namespace QuizBuilder.ViewModels.Subject
         [Required]
         public string Name { get; set; }
         [Required]
+        public string ConnectionId { get; set; }
+        [Required]
         public string Password { get; set; }
     }
 }

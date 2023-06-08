@@ -76,9 +76,19 @@ namespace QuizBuilder.Controllers
             if (ModelState.IsValid)
             {
                 var user = await _userManager.GetUserAsync(User);
+
+                // Перевірка на наявність ConnectionId в БД
+                var existingSubject = await _dbContext.Subjects.FirstOrDefaultAsync(s => s.ConnectionId == subjectModel.ConnectionId);
+                if (existingSubject != null)
+                {
+                    ModelState.AddModelError("ConnectionId", "Такий код підключення вже існує. Використайте інше значення.");
+                    return View(subjectModel);
+                }
+
                 var subject = new Subject
                 {
                     Name = subjectModel.Name,
+                    ConnectionId = subjectModel.ConnectionId,
                     Password = subjectModel.Password,
                     TeacherId = user.Id
                 };
@@ -107,6 +117,7 @@ namespace QuizBuilder.Controllers
             {
                 Id = subject.Id,
                 Name = subject.Name,
+                ConnectionId = subject.ConnectionId,
                 Password = subject.Password
             };
             return View(subjectModel);
@@ -132,7 +143,15 @@ namespace QuizBuilder.Controllers
                         return NotFound();
                     }
 
+                    var existingSubject = await _dbContext.Subjects.FirstOrDefaultAsync(s => s.ConnectionId == subjectModel.ConnectionId && s.Id != id);
+                    if (existingSubject != null)
+                    {
+                        ModelState.AddModelError("ConnectionId", "Такий код підключення вже існує. Використайте інше значення.");
+                        return View(subjectModel);
+                    }
+
                     subject.Name = subjectModel.Name;
+                    subject.ConnectionId = subjectModel.ConnectionId;
                     subject.Password = subjectModel.Password;
 
                     _dbContext.Update(subject);
@@ -155,8 +174,6 @@ namespace QuizBuilder.Controllers
 
             return View(subjectModel);
         }
-
-
 
         // GET: Teacher/Delete/5
         public async Task<IActionResult> Delete(int? id)
