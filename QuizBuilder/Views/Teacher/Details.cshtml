@@ -42,41 +42,41 @@
     <hr />
     @if (Model.SubjectStudents.Count > 0)
     {
-                    <table class="table">
-                        <thead>
-                            <tr>
-                                <th>
-                                    Ім'я
-                                </th>
-                                <th>
-                                    Прізвище
-                                </th>
-                                <th>
-                                    Електронна пошта
-                                </th>
-                                <th></th>
-                            </tr>
-                        </thead>
-                        <tbody>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>
+                        Ім'я
+                    </th>
+                    <th>
+                        Прізвище
+                    </th>
+                    <th>
+                        Електронна пошта
+                    </th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
                 @foreach (var subjectStudent in Model.SubjectStudents)
                 {
-                                            <tr>
-                                                <td>
+                    <tr>
+                        <td>
                             @Html.DisplayFor(modelItem => subjectStudent.Student.FirstName)
-                                                </td>
-                                                <td>
+                        </td>
+                        <td>
                             @Html.DisplayFor(modelItem => subjectStudent.Student.LastName)
-                                                </td>
-                                                        <td>
+                        </td>
+                        <td>
                             @Html.DisplayFor(modelItem => subjectStudent.Student.Email)
-                                                        </td>
-                                                <td>
-                                                    <a class="btn btn-danger" asp-action="RemoveStudent" asp-route-subjectId="@Model.Id" asp-route-studentId="@subjectStudent.StudentId">Видалити</a>
-                                                </td>
-                                            </tr>
+                        </td>
+                        <td>
+                            <a class="btn btn-danger" asp-action="RemoveStudent" asp-route-subjectId="@Model.Id" asp-route-studentId="@subjectStudent.StudentId">Видалити</a>
+                        </td>
+                    </tr>
                 }
-                        </tbody>
-                    </table>
+            </tbody>
+        </table>
     }
     else
     {
