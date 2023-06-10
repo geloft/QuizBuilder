@@ -51,7 +51,10 @@ namespace QuizBuilder.Controllers
 
             var subject = await _dbContext.Subjects
                 .Include(s => s.Teacher)
+                .Include(s => s.SubjectStudents)
+                .ThenInclude(ss => ss.Student)
                 .FirstOrDefaultAsync(m => m.Id == id);
+
             if (subject == null)
             {
                 return NotFound();
@@ -59,6 +62,31 @@ namespace QuizBuilder.Controllers
 
             return View(subject);
         }
+
+        // GET: Teacher/RemoveStudent
+        public async Task<IActionResult> RemoveStudent(int subjectId, string studentId)
+        {
+            var subject = await _dbContext.Subjects
+                .Include(s => s.SubjectStudents)
+                .FirstOrDefaultAsync(s => s.Id == subjectId);
+
+            if (subject == null)
+            {
+                return NotFound();
+            }
+
+            var subjectStudent = subject.SubjectStudents.FirstOrDefault(ss => ss.StudentId == studentId);
+            if (subjectStudent == null)
+            {
+                return NotFound();
+            }
+
+            _dbContext.SubjectStudents.Remove(subjectStudent);
+            await _dbContext.SaveChangesAsync();
+
+            return RedirectToAction("Details", new { id = subjectId });
+        }
+
 
         // GET: Teacher/Create
         public IActionResult Create()
