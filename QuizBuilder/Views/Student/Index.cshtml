@@ -1,0 +1,35 @@
+﻿@model IEnumerable<QuizBuilder.Data.Entities.Subject>
+
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1>Список предметів</h1>
+
+<p>
+    <a class="btn btn-primary" asp-action="JoinSubject">Приєднатись до предмету</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                Назва предмету
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Name)
+                </td>
+                <td>
+                    <a class="btn btn-primary" asp-action="SubjectTests" asp-route-id="@item.Id">Тестування</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
