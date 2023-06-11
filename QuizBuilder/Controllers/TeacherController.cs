@@ -11,6 +11,7 @@ using QuizBuilder.Data;
 using QuizBuilder.Data.Entities;
 using QuizBuilder.ViewModels;
 using QuizBuilder.ViewModels.Subject;
+using QuizBuilder.ViewModels.Test;
 
 namespace QuizBuilder.Controllers
 {
@@ -242,6 +243,61 @@ namespace QuizBuilder.Controllers
         private bool SubjectExists(int id)
         {
             return (_dbContext.Subjects?.Any(e => e.Id == id)).GetValueOrDefault();
+        }
+
+        // GET: Teacher/Tests/5
+        public async Task<IActionResult> Tests(int id)
+        {
+            var subject = await _dbContext.Subjects.FindAsync(id);
+
+            if (subject == null)
+            {
+                return NotFound();
+            }
+
+            var tests = await _dbContext.Tests
+                .Where(t => t.SubjectId == id)
+                .ToListAsync();
+
+            ViewData["SubjectId"] = id;
+
+            return View(tests);
+        }
+
+        // GET: Teacher/CreateTest
+        public IActionResult CreateTest(int subjectId)
+        {
+            var viewModel = new TestCreateViewModel
+            {
+                SubjectId = subjectId
+            };
+
+            return View(viewModel);
+        }
+
+        // POST: Teacher/CreateTest
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CreateTest(TestCreateViewModel viewModel)
+        {
+            if (ModelState.IsValid)
+            {
+                var test = new Test
+                {
+                    Name = viewModel.Name,
+                    StartTime = viewModel.StartTime,
+                    EndTime = viewModel.EndTime,
+                    Duration = viewModel.Duration,
+                    SubjectId = viewModel.SubjectId
+                };
+
+                _dbContext.Tests.Add(test);
+                await _dbContext.SaveChangesAsync();
+
+                return RedirectToAction("Tests", new { id = viewModel.SubjectId });
+            }
+
+            return View(viewModel);
         }
     }
 }

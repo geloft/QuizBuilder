@@ -250,7 +250,7 @@ namespace QuizBuilder.Data.Migrations
 
                     b.HasIndex("QuestionId");
 
-                    b.ToTable("Options");
+                    b.ToTable("Options", (string)null);
                 });
 
             modelBuilder.Entity("QuizBuilder.Data.Entities.Question", b =>
@@ -276,7 +276,7 @@ namespace QuizBuilder.Data.Migrations
 
                     b.HasIndex("TestId");
 
-                    b.ToTable("Questions");
+                    b.ToTable("Questions", (string)null);
                 });
 
             modelBuilder.Entity("QuizBuilder.Data.Entities.StudentAnswer", b =>
@@ -303,7 +303,7 @@ namespace QuizBuilder.Data.Migrations
 
                     b.HasIndex("StudentTestId");
 
-                    b.ToTable("StudentAnswers");
+                    b.ToTable("StudentAnswers", (string)null);
                 });
 
             modelBuilder.Entity("QuizBuilder.Data.Entities.StudentTest", b =>
@@ -332,7 +332,7 @@ namespace QuizBuilder.Data.Migrations
 
                     b.HasIndex("TestId");
 
-                    b.ToTable("StudentTests");
+                    b.ToTable("StudentTests", (string)null);
                 });
 
             modelBuilder.Entity("QuizBuilder.Data.Entities.Subject", b =>
@@ -363,7 +363,7 @@ namespace QuizBuilder.Data.Migrations
 
                     b.HasIndex("TeacherId");
 
-                    b.ToTable("Subjects");
+                    b.ToTable("Subjects", (string)null);
                 });
 
             modelBuilder.Entity("QuizBuilder.Data.Entities.SubjectStudent", b =>
@@ -381,7 +381,7 @@ namespace QuizBuilder.Data.Migrations
 
                     b.HasIndex("StudentId");
 
-                    b.ToTable("SubjectStudents");
+                    b.ToTable("SubjectStudents", (string)null);
                 });
 
             modelBuilder.Entity("QuizBuilder.Data.Entities.Test", b =>
@@ -412,7 +412,7 @@ namespace QuizBuilder.Data.Migrations
 
                     b.HasIndex("SubjectId");
 
-                    b.ToTable("Tests");
+                    b.ToTable("Tests", (string)null);
                 });
 
             modelBuilder.Entity("QuizBuilder.Data.Entities.TestResult", b =>
@@ -439,7 +439,7 @@ namespace QuizBuilder.Data.Migrations
 
                     b.HasIndex("TestId");
 
-                    b.ToTable("TestResults");
+                    b.ToTable("TestResults", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>

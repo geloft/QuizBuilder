@@ -1,0 +1,44 @@
+﻿@model List<QuizBuilder.Data.Entities.Question>
+
+@{
+    ViewData["Title"] = "Questions";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1>Список запитань для тесту: @ViewData["TestName"]</h1>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                Текст питання
+            </th>
+            <th>
+                Тип питання
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var question in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => question.Text)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => question.Type)
+                </td>
+                <td>
+                    <a class="btn btn-primary" asp-controller="Test" asp-action="EditQuestion" asp-route-questionId="@question.Id">Редагувати</a>
+                    <a class="btn btn-danger mt-2" asp-controller="Test" asp-action="DeleteQuestion" asp-route-id="@question.Id">Видалити</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<div>
+    <a class="btn btn-secondary" asp-action="Index">Повернутися до списку тестувань</a>
+    <a class="btn btn-primary" asp-controller="Test" asp-action="CreateQuestion" asp-route-id="@ViewData["TestId"]">Додати запитання</a>
+</div>

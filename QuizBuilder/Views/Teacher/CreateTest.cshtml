@@ -1,0 +1,54 @@
+﻿@model QuizBuilder.ViewModels.Test.TestCreateViewModel
+
+@{
+    ViewData["Title"] = "Create Test";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1>Створення тестування</h1>
+
+<hr />
+
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="CreateTest">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="SubjectId" />
+
+            <div class="form-group">
+                <label asp-for="Name" class="control-label">Назва тестування</label>
+                <input asp-for="Name" class="form-control" />
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="StartTime" class="control-label">Час початку (yyyy-MM-dd HH:mm:ss)</label>
+                <input asp-for="StartTime" class="form-control" />
+                <span asp-validation-for="StartTime" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="EndTime" class="control-label">Час кінця (yyyy-MM-dd HH:mm:ss)</label>
+                <input asp-for="EndTime" class="form-control" />
+                <span asp-validation-for="EndTime" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Duration" class="control-label">Тривалість тестування (у хвилинах)</label>
+                <input asp-for="Duration" class="form-control" />
+                <span asp-validation-for="Duration" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mt-2">
+                <input type="submit" value="Створити тестування" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="mt-2">
+    <a class="btn btn-secondary" asp-action="Tests" asp-route-id="@Model.SubjectId">Повернутися до списку тестувань</a>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
