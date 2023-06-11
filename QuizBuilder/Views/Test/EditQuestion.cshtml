@@ -5,75 +5,154 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h1>Редагування запитання</h1>
+<h1>Edit Question</h1>
 
 @using (Html.BeginForm())
 {
-        <div class="form-group">
-            <label asp-for="Text" class="control-label">Текст питання:</label>
-            <textarea asp-for="Text" class="form-control"></textarea>
-            <span asp-validation-for="Text" class="text-danger"></span>
-        </div>
+    @Html.HiddenFor(model => model.QuestionId)
+    @Html.HiddenFor(model => model.Type)
 
-        <div class="form-group">
-            <label asp-for="Type" class="control-label">Тип питання:</label>
-            <select asp-for="Type" class="form-control">
-                <option value="SingleChoice">Одиночний вибір</option>
-                <option value="MultipleChoice">Множинний вибір</option>
-                <option value="Matching">Відповідність</option>
-                <option value="Open">Відкрите</option>
-                <option value="Algorithm">Алгоритмічне</option>
-            </select>
-            <span asp-validation-for="Type" class="text-danger"></span>
-        </div>
+    <div class="form-group">
+        @Html.LabelFor(model => model.Text)
+        @Html.TextAreaFor(model => model.Text, new { @class = "form-control" })
+        @Html.ValidationMessageFor(model => model.Text, "", new { @class = "text-danger" })
+    </div>
 
     @if (Model.Type == "SingleChoice")
     {
-                <div class="form-group">
-                    <label asp-for="CorrectOptionText" class="control-label">Правильна відповідь:</label>
-                    <input asp-for="CorrectOptionText" class="form-control" />
-                    <span asp-validation-for="CorrectOptionText" class="text-danger"></span>
-                </div>
+        <div class="form-group">
+            <label>Correct Option</label>
+            @Html.TextBoxFor(model => model.CorrectOptionText, new { @class = "form-control" })
+            @Html.ValidationMessageFor(model => model.CorrectOptionText, "", new { @class = "text-danger" })
+        </div>
 
-                <div class="form-group">
-                    <label asp-for="WrongOption1Text" class="control-label">Неправильна відповідь 1:</label>
-                    <input asp-for="WrongOption1Text" class="form-control" />
-                    <span asp-validation-for="WrongOption1Text" class="text-danger"></span>
-                </div>
+        <div class="form-group">
+            <label>Wrong Option 1</label>
+            @Html.TextBoxFor(model => model.WrongOption1Text, new { @class = "form-control" })
+            @Html.ValidationMessageFor(model => model.WrongOption1Text, "", new { @class = "text-danger" })
+        </div>
 
-                <div class="form-group">
-                    <label asp-for="WrongOption2Text" class="control-label">Неправильна відповідь 2:</label>
-                    <input asp-for="WrongOption2Text" class="form-control" />
-                    <span asp-validation-for="WrongOption2Text" class="text-danger"></span>
-                </div>
+        <div class="form-group">
+            <label>Wrong Option 2</label>
+            @Html.TextBoxFor(model => model.WrongOption2Text, new { @class = "form-control" })
+            @Html.ValidationMessageFor(model => model.WrongOption2Text, "", new { @class = "text-danger" })
+        </div>
+    }
+    @if (Model.Type == "MultipleChoice")
+    {
+            <h4>Options:</h4>
+
+            <div class="form-group">
+            @Html.LabelFor(model => model.OptionText1, "Option 1")
+            @Html.TextBoxFor(model => model.OptionText1, new { @class = "form-control" })
+            </div>
+            <div class="form-group">
+            @Html.LabelFor(model => model.OptionText2, "Option 2")
+            @Html.TextBoxFor(model => model.OptionText2, new { @class = "form-control" })
+            </div>
+            <div class="form-group">
+            @Html.LabelFor(model => model.OptionText3, "Option 3")
+            @Html.TextBoxFor(model => model.OptionText3, new { @class = "form-control" })
+            </div>
+            <div class="form-group">
+            @Html.LabelFor(model => model.OptionText4, "Option 4")
+            @Html.TextBoxFor(model => model.OptionText4, new { @class = "form-control" })
+            </div>
+            <div class="form-group">
+            @Html.LabelFor(model => model.OptionText5, "Option 5")
+            @Html.TextBoxFor(model => model.OptionText5, new { @class = "form-control" })
+            </div>
+
+            <h4>Correct Options:</h4>
+
+            <div class="form-group">
+            @Html.CheckBox("CorrectOptions", new { value = "OptionText1" })
+            @Html.LabelFor(model => model.OptionText1, "Option 1", new { @class = "form-check-label" })
+            </div>
+            <div class="form-group">
+            @Html.CheckBox("CorrectOptions", new { value = "OptionText2" })
+            @Html.LabelFor(model => model.OptionText2, "Option 2", new { @class = "form-check-label" })
+            </div>
+            <div class="form-group">
+            @Html.CheckBox("CorrectOptions", new { value = "OptionText3" })
+            @Html.LabelFor(model => model.OptionText3, "Option 3", new { @class = "form-check-label" })
+            </div>
+            <div class="form-group">
+            @Html.CheckBox("CorrectOptions", new { value = "OptionText4" })
+            @Html.LabelFor(model => model.OptionText4, "Option 4", new { @class = "form-check-label" })
+            </div>
+            <div class="form-group">
+            @Html.CheckBox("CorrectOptions", new { value = "OptionText5" })
+            @Html.LabelFor(model => model.OptionText5, "Option 5", new { @class = "form-check-label" })
+            </div>
+    }
+    @if (Model.Type == "Matching")
+    {
+            <h4>Statements and Answers:</h4>
+            <div class="form-group">
+            @Html.LabelFor(model => model.Statement1, "Statement 1")
+            @Html.TextBoxFor(model => model.Statement1, new { @class = "form-control" })
+            </div>
+            <div class="form-group">
+            @Html.LabelFor(model => model.Answer1, "Answer 1")
+            @Html.TextBoxFor(model => model.Answer1, new { @class = "form-control" })
+            </div>
+            <div class="form-group">
+            @Html.LabelFor(model => model.Statement2, "Statement 2")
+            @Html.TextBoxFor(model => model.Statement2, new { @class = "form-control" })
+            </div>
+            <div class="form-group">
+            @Html.LabelFor(model => model.Answer2, "Answer 2")
+            @Html.TextBoxFor(model => model.Answer2, new { @class = "form-control" })
+            </div>
+            <div class="form-group">
+            @Html.LabelFor(model => model.Statement3, "Statement 3")
+            @Html.TextBoxFor(model => model.Statement3, new { @class = "form-control" })
+            </div>
+            <div class="form-group">
+            @Html.LabelFor(model => model.Answer3, "Answer 3")
+            @Html.TextBoxFor(model => model.Answer3, new { @class = "form-control" })
+            </div>
+            <div class="form-group">
+            @Html.LabelFor(model => model.Statement4, "Statement 4")
+            @Html.TextBoxFor(model => model.Statement4, new { @class = "form-control" })
+            </div>
+            <div class="form-group">
+            @Html.LabelFor(model => model.Answer4, "Answer 4")
+            @Html.TextBoxFor(model => model.Answer4, new { @class = "form-control" })
+            </div>
+    }
+    else if (Model.Type == "Open")
+    {
+        <div class="form-group">
+            @Html.LabelFor(model => model.Text)
+            @Html.TextAreaFor(model => model.Text, new { @class = "form-control" })
+            @Html.ValidationMessageFor(model => model.Text, "", new { @class = "text-danger" })
+        </div>
     }
     else if (Model.Type == "Algorithm")
     {
-                <div class="form-group">
-                    <label asp-for="ExpectedAnswer1Text" class="control-label">Очікувана відповідь 1:</label>
-                    <input asp-for="ExpectedAnswer1Text" class="form-control" />
-                    <span asp-validation-for="ExpectedAnswer1Text" class="text-danger"></span>
-                </div>
+        <div class="form-group">
+            <label>Expected Answer 1</label>
+            @Html.TextBoxFor(model => model.ExpectedAnswer1Text, new { @class = "form-control" })
+            @Html.ValidationMessageFor(model => model.ExpectedAnswer1Text, "", new { @class = "text-danger" })
+        </div>
 
-                <div class="form-group">
-                    <label asp-for="ExpectedAnswer2Text" class="control-label">Очікувана відповідь 2:</label>
-                    <input asp-for="ExpectedAnswer2Text" class="form-control" />
-                    <span asp-validation-for="ExpectedAnswer2Text" class="text-danger"></span>
-                </div>
+        <div class="form-group">
+            <label>Expected Answer 2</label>
+            @Html.TextBoxFor(model => model.ExpectedAnswer2Text, new { @class = "form-control" })
+            @Html.ValidationMessageFor(model => model.ExpectedAnswer2Text, "", new { @class = "text-danger" })
+        </div>
 
-                <div class="form-group">
-                    <label asp-for="ExpectedAnswer3Text" class="control-label">Очікувана відповідь 3:</label>
-                    <input asp-for="ExpectedAnswer3Text" class="form-control" />
-                    <span asp-validation-for="ExpectedAnswer3Text" class="text-danger"></span>
-                </div>
+        <div class="form-group">
+            <label>Expected Answer 3</label>
+            @Html.TextBoxFor(model => model.ExpectedAnswer3Text, new { @class = "form-control" })
+            @Html.ValidationMessageFor(model => model.ExpectedAnswer3Text, "", new { @class = "text-danger" })
+        </div>
     }
 
-        <div class="form-group">
-            <input type="hidden" asp-for="QuestionId" />
-        </div>
-
-        <div class="form-group">
-            <input type="submit" value="Зберегти" class="btn btn-primary" />
-                <a asp-controller="Test" asp-action="Index" asp-route-id="@ViewData["TestId"]" class="btn btn-secondary">Повернутися до списку запитань</a>
-        </div>
+    <div class="form-group">
+        <input type="submit" value="Зберегти" class="btn btn-primary mt-2" />
+        <a class="btn btn-secondary mt-2" asp-action="Index" asp-route-id="@Model.TestId">Повернутись назад</a>
+    </div>
 }
