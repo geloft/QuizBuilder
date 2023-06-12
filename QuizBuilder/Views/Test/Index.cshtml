@@ -39,6 +39,6 @@
 </table>
 
 <div>
-    <a class="btn btn-secondary" asp-action="Index">Повернутися до списку тестувань</a>
     <a class="btn btn-primary" asp-controller="Test" asp-action="CreateQuestion" asp-route-id="@ViewData["TestId"]">Додати запитання</a>
+    <a class="btn btn-secondary" asp-controller="Teacher" asp-action="Tests" asp-route-id="@ViewData["SubjectId"]">Повернутися до списку тестувань</a>
 </div>
