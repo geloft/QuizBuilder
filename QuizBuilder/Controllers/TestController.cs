@@ -27,13 +27,13 @@ namespace QuizBuilder.Controllers
             }
 
             var questions = _dbContext.Questions
-        .Where(q => q.TestId == id)
-        .OrderBy(q => q.Type == "SingleChoice" ? 1 :
-                      q.Type == "MultipleChoice" ? 2 :
-                      q.Type == "Matching" ? 3 :
-                      q.Type == "Open" ? 4 :
-                      q.Type == "Algorithm" ? 5 : 6)
-        .ToList();
+                .Where(q => q.TestId == id)
+                .OrderBy(q => q.Type == "SingleChoice" ? 1 :
+                q.Type == "MultipleChoice" ? 2 :
+                q.Type == "Matching" ? 3 :
+                q.Type == "Open" ? 4 :
+                q.Type == "Algorithm" ? 5 : 6)
+                .ToList();
 
             ViewData["TestName"] = test.Name;
             ViewData["SubjectId"] = test.SubjectId;
