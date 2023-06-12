@@ -41,7 +41,6 @@ namespace QuizBuilder.Controllers
             return View(subjects);
         }
 
-
         // GET: Teacher/Details/5
         public async Task<IActionResult> Details(int? id)
         {
@@ -87,7 +86,6 @@ namespace QuizBuilder.Controllers
 
             return RedirectToAction("Details", new { id = subjectId });
         }
-
 
         // GET: Teacher/Create
         public IActionResult Create()
