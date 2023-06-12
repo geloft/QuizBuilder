@@ -143,7 +143,9 @@ namespace QuizBuilder.Controllers
 
             if (studentTest != null)
             {
-                studentTest.Test.Questions = studentTest.Test.Questions.OrderBy(q => q.Type switch
+                studentTest.Test.Questions = studentTest.Test.Questions
+                    .Where(q => q.Type != "Algorithm")
+                    .OrderBy(q => q.Type switch
                 {
                     "SingleChoice" => 1,
                     "MultipleChoice" => 2,
@@ -205,7 +207,7 @@ namespace QuizBuilder.Controllers
                             {
                                 var studentAnswer = new StudentAnswer
                                 {
-                                    Text="",
+                                    Text = "",
                                     OptionId = selectedOptionId
                                 };
                                 studentAnswers.Add(studentAnswer);
