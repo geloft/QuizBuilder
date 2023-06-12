@@ -129,5 +129,97 @@ namespace QuizBuilder.Controllers
 
             return View("StartTest", test);
         }
+
+        // GET: Student/StartQuestions/{id}
+        public async Task<IActionResult> StartQuestions(int id)
+        {
+            var currentUser = await _userManager.GetUserAsync(User);
+
+            var studentTest = _dbContext.StudentTests
+                .Include(st => st.Test)
+                .ThenInclude(t => t.Questions)
+                .ThenInclude(q => q.Options)
+                .FirstOrDefault(st => st.StudentId == currentUser.Id && st.TestId == id);
+
+            if (studentTest != null)
+            {
+                studentTest.Test.Questions = studentTest.Test.Questions.OrderBy(q => q.Type switch
+                {
+                    "SingleChoice" => 1,
+                    "MultipleChoice" => 2,
+                    "Matching" => 3,
+                    "Open" => 4,
+                    _ => 5
+                }).ToList();
+            }
+
+            if (studentTest == null)
+            {
+                return NotFound();
+            }
+
+            return View("StartQuestions", studentTest);
+        }
+
+
+        // POST: Student/PostStartQuestions/{id}
+        [HttpPost]
+        public async Task<IActionResult> StartQuestions(int id, [FromForm] Dictionary<int, string> answers)
+        {
+            var currentUser = await _userManager.GetUserAsync(User);
+
+            var studentTest = _dbContext.StudentTests
+                .Include(st => st.Test)
+                .Include(st => st.Question)
+                .ThenInclude(q => q.Options)
+                .FirstOrDefault(st => st.StudentId == currentUser.Id && st.TestId == id);
+
+            if (studentTest == null)
+            {
+                return NotFound();
+            }
+
+            foreach (var question in studentTest.Test.Questions)
+            {
+                if (question.Type == "SingleChoice" || question.Type == "MultipleChoice" || question.Type == "Matching")
+                {
+                    var selectedOptions = new List<int>();
+                    foreach (var option in question.Options)
+                    {
+                        if (answers.ContainsKey(option.Id) && answers[option.Id] == "on")
+                        {
+                            selectedOptions.Add(option.Id);
+                        }
+                    }
+
+                    // Збереження відповідей MultipleChoice та Matching
+                    foreach (var optionId in selectedOptions)
+                    {
+                        var studentAnswer = new StudentAnswer
+                        {
+                            Text = null,
+                            StudentTestId = studentTest.Id,
+                            OptionId = optionId
+                        };
+                        _dbContext.StudentAnswers.Add(studentAnswer);
+                    }
+                }
+                else if (question.Type == "Open")
+                {
+                    var studentAnswer = new StudentAnswer
+                    {
+                        Text = answers.ContainsKey(question.Id) ? answers[question.Id] : null,
+                        StudentTestId = studentTest.Id,
+                        OptionId = 0
+                    };
+                    _dbContext.StudentAnswers.Add(studentAnswer);
+                }
+            }
+
+            _dbContext.SaveChanges();
+
+            return RedirectToAction("FinishTest", new { id = studentTest.Id });
+        }
+
     }
 }

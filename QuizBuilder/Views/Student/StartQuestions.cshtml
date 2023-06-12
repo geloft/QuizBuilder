@@ -1,0 +1,75 @@
+﻿@using QuizBuilder.Data.Entities
+@model StudentTest
+
+<h1>Start Questions</h1>
+
+@using (Html.BeginForm("StartQuestions", "Student", FormMethod.Post))
+{
+    @Html.AntiForgeryToken()
+
+    @foreach (var question in Model.Test.Questions)
+    {
+        <h2>@question.Text</h2>
+
+        @if (question.Type == "SingleChoice")
+        {
+            <p>Виберіть одну правильну відповідь:</p>
+            <ul>
+                @foreach (var option in question.Options)
+                {
+                    <li>
+                        <label>
+                            @Html.RadioButton("Question_" + question.Id, option.Id) @option.Text
+                        </label>
+                    </li>
+                }
+            </ul>
+        }
+        else if (question.Type == "MultipleChoice")
+        {
+            <p>Виберіть декілька правильних відповідей:</p>
+            <ul>
+                @foreach (var option in question.Options)
+                {
+                    <li>
+                        <label>
+                            @Html.CheckBox("Question_" + question.Id, false, new { value = option.Id }) @option.Text
+                        </label>
+                    </li>
+                }
+            </ul>
+        }
+        else if (question.Type == "Matching")
+        {
+            <p>Виберіть правильну відповідність:</p>
+            <ul>
+                @for (var i = 0; i < question.Options.Count; i += 2)
+                {
+                    var statement = question.Options.ElementAt(i);
+                    var answers = new List<Option>
+                    {
+                    question.Options.ElementAt(1),
+                    question.Options.ElementAt(3),
+                    question.Options.ElementAt(5),
+                    question.Options.ElementAt(7)
+                    };
+
+                    <li>
+                        <strong>@statement.Text</strong>
+                        @Html.DropDownList("Question_" + question.Id + "_" + statement.Id, new SelectList(answers, "Id", "Text"), "-- Select --")
+                    </li>
+                }
+            </ul>
+        }
+
+        else if (question.Type == "Open")
+        {
+            <p>Дайте розгорнуту відповідь на питання:</p>
+            <div>
+                @Html.TextArea("Question_" + question.Id, null, new { rows = 4, cols = 50 })
+            </div>
+        }
+    }
+
+    <input type="submit" value="Submit" class="btn btn-primary" />
+}
