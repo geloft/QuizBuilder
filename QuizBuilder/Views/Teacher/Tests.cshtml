@@ -45,7 +45,7 @@
                 </td>
                 <td>
                     <a class="btn btn-primary" asp-controller="Test" asp-action="Index" asp-route-id="@test.Id">Налаштування</a>
-                    <a class="btn btn-primary" asp-controller="Teacher" asp-action="GenerateQuestions" asp-route-id="@ViewData["SubjectId"]">Згенерувати тестування</a>
+                    <a class="btn btn-primary" asp-controller="Teacher" asp-action="GenerateQuestions" asp-route-id="@test.Id">Згенерувати тестування</a>
                 </td>
             </tr>
         }

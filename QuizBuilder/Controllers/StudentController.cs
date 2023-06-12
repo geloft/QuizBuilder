@@ -5,6 +5,7 @@ using QuizBuilder.Data.Entities;
 using QuizBuilder.Data;
 using System.Data;
 using QuizBuilder.ViewModels.Student;
+using Microsoft.EntityFrameworkCore;
 
 namespace QuizBuilder.Controllers
 {
@@ -67,11 +68,42 @@ namespace QuizBuilder.Controllers
             return View(model);
         }
 
-        // GET: Student/SubjectTests/5
-        public IActionResult SubjectTests()
+        // GET: Student/SubjectTests/{id}
+        public async Task<IActionResult> SubjectTests(int id)
         {
-            // TODO
-            return View();
+            var currentUser = await _userManager.GetUserAsync(User);
+
+            var subject = _dbContext.Subjects.FirstOrDefault(s => s.Id == id);
+            if (subject == null)
+            {
+                return NotFound();
+            }
+
+            var studentTests = _dbContext.StudentTests
+                .Include(st => st.Test)
+                .Where(st => st.StudentId == currentUser.Id && st.Test.SubjectId == id)
+                .Select(st => st.Test) // Вибираємо тільки об'єкт тесту
+                .Distinct() // Відбираємо унікальні значення тестів
+                .ToList();
+
+            var viewModel = new List<StudentTestViewModel>();
+
+            foreach (var test in studentTests)
+            {
+                var testViewModel = new StudentTestViewModel
+                {
+                    TestId = test.Id,
+                    TestName = test.Name,
+                    StartTime = test.StartTime,
+                    EndTime = test.EndTime,
+                    Duration = test.Duration
+                };
+
+                viewModel.Add(testViewModel);
+            }
+
+            return View("SubjectTests", viewModel);
         }
+
     }
 }

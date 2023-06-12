@@ -1,0 +1,35 @@
+﻿@using QuizBuilder.ViewModels.Student
+@model List<StudentTestViewModel>
+
+<h1>Список тестувань</h1>
+
+@if (Model.Count == 0)
+{
+    <p>Відсутні активні тестування.</p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Назва тестування</th>
+                <th>Початок</th>
+                <th>Кінець</th>
+                <th>Тривалість</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var test in Model)
+            {
+                <tr>
+                    <td>@test.TestName</td>
+                    <td>@test.StartTime</td>
+                    <td>@test.EndTime</td>
+                    <td>@test.Duration</td>
+                    <td><a class="btn btn-primary" asp-action="StartTest" asp-controller="Student" asp-route-id="@test.TestId">Розпочати тестування</a></td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
