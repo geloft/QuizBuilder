@@ -18,7 +18,7 @@
             {
                 <div>
                     @Html.RadioButton("Question_" + question.Id, option.Id) @option.Text
-                    </div>
+                </div>
             }
         }
         else if (question.Type == "MultipleChoice")
@@ -28,7 +28,7 @@
             {
                 <div>
                     @Html.CheckBox("Question_" + question.Id, false, new { value = option.Id }) @option.Text
-                    </div>
+                </div>
             }
         }
         else if (question.Type == "Matching")
@@ -38,19 +38,18 @@
             {
                 var statement = question.Options.ElementAt(i);
                 var answers = new List<Option>
-                    {
+                {
                     question.Options.ElementAt(1),
                     question.Options.ElementAt(3),
                     question.Options.ElementAt(5),
                     question.Options.ElementAt(7)
-                    };
-                    <div class="mt-2">
-               <div class="mr-2">@statement.Text</div>
-                @Html.DropDownList("Question_" + question.Id + "_" + statement.Id, new SelectList(answers, "Id", "Text"), "-- Select --")
-                    </div>
+                };
+                <div class="mt-2">
+                    <div class="mr-2">@statement.Text</div>
+                    @Html.DropDownList("Question_" + question.Id + "_" + statement.Id, new SelectList(answers, "Id", "Text"), "-- Select --")
+                </div>
             }
         }
-
         else if (question.Type == "Open")
         {
             <p>Дайте розгорнуту відповідь на питання:</p>

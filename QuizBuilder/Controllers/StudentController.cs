@@ -161,16 +161,14 @@ namespace QuizBuilder.Controllers
             return View("StartQuestions", studentTest);
         }
 
-
-        // POST: Student/PostStartQuestions/{id}
         [HttpPost]
-        public async Task<IActionResult> StartQuestions(int id, [FromForm] Dictionary<int, string> answers)
+        public async Task<IActionResult> StartQuestions(int id, IFormCollection form)
         {
             var currentUser = await _userManager.GetUserAsync(User);
 
             var studentTest = _dbContext.StudentTests
                 .Include(st => st.Test)
-                .Include(st => st.Question)
+                .ThenInclude(t => t.Questions)
                 .ThenInclude(q => q.Options)
                 .FirstOrDefault(st => st.StudentId == currentUser.Id && st.TestId == id);
 
@@ -179,46 +177,83 @@ namespace QuizBuilder.Controllers
                 return NotFound();
             }
 
+            var studentAnswers = new List<StudentAnswer>();
+
             foreach (var question in studentTest.Test.Questions)
             {
-                if (question.Type == "SingleChoice" || question.Type == "MultipleChoice" || question.Type == "Matching")
-                {
-                    var selectedOptions = new List<int>();
-                    foreach (var option in question.Options)
-                    {
-                        if (answers.ContainsKey(option.Id) && answers[option.Id] == "on")
-                        {
-                            selectedOptions.Add(option.Id);
-                        }
-                    }
+                var selectedOptions = form["Question_" + question.Id];
 
-                    // Збереження відповідей MultipleChoice та Matching
-                    foreach (var optionId in selectedOptions)
+                if (question.Type == "SingleChoice")
+                {
+                    if (int.TryParse(selectedOptions, out int selectedOptionId))
                     {
                         var studentAnswer = new StudentAnswer
                         {
-                            Text = null,
-                            StudentTestId = studentTest.Id,
-                            OptionId = optionId
+                            Text = "",
+                            OptionId = selectedOptionId
                         };
-                        _dbContext.StudentAnswers.Add(studentAnswer);
+                        studentAnswers.Add(studentAnswer);
+                    }
+                }
+                else if (question.Type == "MultipleChoice")
+                {
+                    if (selectedOptions.Count > 0)
+                    {
+                        foreach (var selectedOption in selectedOptions)
+                        {
+                            if (int.TryParse(selectedOption, out int selectedOptionId))
+                            {
+                                var studentAnswer = new StudentAnswer
+                                {
+                                    Text="",
+                                    OptionId = selectedOptionId
+                                };
+                                studentAnswers.Add(studentAnswer);
+                            }
+                        }
+                    }
+                }
+                else if (question.Type == "Matching")
+                {
+                    for (var i = 0; i < question.Options.Count; i += 2)
+                    {
+                        var statement = question.Options.ElementAt(i);
+                        var selectedOptionId = int.Parse(form["Question_" + question.Id + "_" + statement.Id]);
+                        var studentAnswer = new StudentAnswer
+                        {
+                            OptionId = statement.Id,
+                            Text = selectedOptionId.ToString()
+                        };
+                        studentAnswers.Add(studentAnswer);
                     }
                 }
                 else if (question.Type == "Open")
                 {
+                    var text = form["Question_" + question.Id];
+                    var questionIdTemp = _dbContext.Options
+                    .Where(o => o.QuestionId == question.Id)
+                    .Select(o => o.Id)
+                    .FirstOrDefault();
+
                     var studentAnswer = new StudentAnswer
                     {
-                        Text = answers.ContainsKey(question.Id) ? answers[question.Id] : null,
-                        StudentTestId = studentTest.Id,
-                        OptionId = 0
+                        OptionId = questionIdTemp,
+                        Text = text
                     };
-                    _dbContext.StudentAnswers.Add(studentAnswer);
+                    studentAnswers.Add(studentAnswer);
                 }
             }
+            _dbContext.StudentAnswers.RemoveRange(_dbContext.StudentAnswers.Where(sa => sa.StudentTestId == studentTest.Id));
 
-            _dbContext.SaveChanges();
+            // Save student answers to the database
+            foreach (var answer in studentAnswers)
+            {
+                answer.StudentTestId = studentTest.Id;
+                _dbContext.StudentAnswers.Add(answer);
+            }
+            await _dbContext.SaveChangesAsync();
 
-            return RedirectToAction("FinishTest", new { id = studentTest.Id });
+            return RedirectToAction("Index", "Home");
         }
 
     }
