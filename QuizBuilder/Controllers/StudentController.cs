@@ -104,6 +104,5 @@ namespace QuizBuilder.Controllers
 
             return View("SubjectTests", viewModel);
         }
-
     }
 }
