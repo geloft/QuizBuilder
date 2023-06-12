@@ -26,7 +26,14 @@ namespace QuizBuilder.Controllers
                 return NotFound();
             }
 
-            var questions = _dbContext.Questions.Where(q => q.TestId == id).ToList();
+            var questions = _dbContext.Questions
+        .Where(q => q.TestId == id)
+        .OrderBy(q => q.Type == "SingleChoice" ? 1 :
+                      q.Type == "MultipleChoice" ? 2 :
+                      q.Type == "Matching" ? 3 :
+                      q.Type == "Open" ? 4 :
+                      q.Type == "Algorithm" ? 5 : 6)
+        .ToList();
 
             ViewData["TestName"] = test.Name;
             ViewData["SubjectId"] = test.SubjectId;
@@ -84,7 +91,7 @@ namespace QuizBuilder.Controllers
             var viewModel = new QuestionEditViewModel
             {
                 QuestionId = question.Id,
-                TestId=question.TestId,
+                TestId = question.TestId,
                 Text = question.Text,
                 Type = question.Type
             };
