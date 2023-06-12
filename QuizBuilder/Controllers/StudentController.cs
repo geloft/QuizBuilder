@@ -253,7 +253,15 @@ namespace QuizBuilder.Controllers
             }
             await _dbContext.SaveChangesAsync();
 
-            return RedirectToAction("Index", "Home");
+            // Check if the test contains any "Algorithm" questions
+            if (studentTest.Test.Questions.Any(q => q.Type == "Algorithm"))
+            {
+                return RedirectToAction("StartAlgorithm", new { id = studentTest.Id });
+            }
+            else
+            {
+                return RedirectToAction("FinishTest", new { id = studentTest.Id });
+            }
         }
 
     }

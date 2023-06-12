@@ -319,25 +319,49 @@ namespace QuizBuilder.Controllers
             {
                 QuestionId = viewModel.QuestionId,
                 Text = viewModel.ExpectedAnswer1Text,
-                IsCorrect = true
+                IsCorrect = false
             };
             question.Options.Add(option1);
+
+            var answer1 = new Option
+            {
+                QuestionId = viewModel.QuestionId,
+                Text = viewModel.Answer1Input,
+                IsCorrect = true
+            };
+            question.Options.Add(answer1);
 
             var option2 = new Option
             {
                 QuestionId = viewModel.QuestionId,
                 Text = viewModel.ExpectedAnswer2Text,
-                IsCorrect = true
+                IsCorrect = false
             };
             question.Options.Add(option2);
+
+            var answer2 = new Option
+            {
+                QuestionId = viewModel.QuestionId,
+                Text = viewModel.Answer2Input,
+                IsCorrect = true
+            };
+            question.Options.Add(answer2);
 
             var option3 = new Option
             {
                 QuestionId = viewModel.QuestionId,
                 Text = viewModel.ExpectedAnswer3Text,
-                IsCorrect = true
+                IsCorrect = false
             };
             question.Options.Add(option3);
+
+            var answer3 = new Option
+            {
+                QuestionId = viewModel.QuestionId,
+                Text = viewModel.Answer3Input,
+                IsCorrect = true
+            };
+            question.Options.Add(answer3);
         }
 
     }

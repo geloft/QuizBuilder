@@ -133,21 +133,39 @@
     else if (Model.Type == "Algorithm")
     {
         <div class="form-group">
-            <label>Expected Answer 1</label>
+            <label>Очікуваний вивід 1:</label>
             @Html.TextBoxFor(model => model.ExpectedAnswer1Text, new { @class = "form-control" })
             @Html.ValidationMessageFor(model => model.ExpectedAnswer1Text, "", new { @class = "text-danger" })
         </div>
 
         <div class="form-group">
-            <label>Expected Answer 2</label>
+            <label>Очікуваний вивід 2:</label>
             @Html.TextBoxFor(model => model.ExpectedAnswer2Text, new { @class = "form-control" })
             @Html.ValidationMessageFor(model => model.ExpectedAnswer2Text, "", new { @class = "text-danger" })
         </div>
 
         <div class="form-group">
-            <label>Expected Answer 3</label>
+            <label>Очікуваний вивід 3:</label>
             @Html.TextBoxFor(model => model.ExpectedAnswer3Text, new { @class = "form-control" })
             @Html.ValidationMessageFor(model => model.ExpectedAnswer3Text, "", new { @class = "text-danger" })
+        </div>
+
+        <div class="form-group">
+            <label>Вхідні дані 1:</label>
+            @Html.TextBoxFor(model => model.Answer1Input, new { @class = "form-control" })
+            @Html.ValidationMessageFor(model => model.Answer1Input, "", new { @class = "text-danger" })
+        </div>
+
+        <div class="form-group">
+            <label>Вхідні дані 2:</label>
+            @Html.TextBoxFor(model => model.Answer2Input, new { @class = "form-control" })
+            @Html.ValidationMessageFor(model => model.Answer2Input, "", new { @class = "text-danger" })
+        </div>
+
+        <div class="form-group">
+            <label>Вхідні дані 3:</label>
+            @Html.TextBoxFor(model => model.Answer3Input, new { @class = "form-control" })
+            @Html.ValidationMessageFor(model => model.Answer3Input, "", new { @class = "text-danger" })
         </div>
     }
 

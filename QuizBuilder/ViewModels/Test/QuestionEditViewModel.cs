@@ -36,9 +36,12 @@ namespace QuizBuilder.ViewModels.Test
         public string Statement4 { get; set; }
         public string Answer4 { get; set; }
 
-        // Property for Open
+        // Property for Algorithm
         public string ExpectedAnswer1Text { get; set; }
+        public string Answer1Input { get; set; }
         public string ExpectedAnswer2Text { get; set; }
+        public string Answer2Input { get; set; }
         public string ExpectedAnswer3Text { get; set; }
+        public string Answer3Input { get; set; }
     }
 }
