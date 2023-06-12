@@ -299,5 +299,52 @@ namespace QuizBuilder.Controllers
 
             return View(viewModel);
         }
+
+        // GET: Teacher/GenerateQuestions/{id}
+        public IActionResult GenerateQuestions(int id)
+        {
+            var test = _dbContext.Tests.FirstOrDefault(t => t.Id == id);
+            if (test == null)
+            {
+                return NotFound();
+            }
+
+            var subject = _dbContext.Subjects
+                .Include(s => s.SubjectStudents)
+                .FirstOrDefault(s => s.Id == test.SubjectId);
+            if (subject == null)
+            {
+                return NotFound();
+            }
+
+            var students = subject.SubjectStudents.Select(s => s.StudentId).ToList();
+
+            var questions = _dbContext.Questions.Where(q => q.TestId == id).ToList();
+
+            // Remove previous StudentTest entries
+            var previousStudentTests = _dbContext.StudentTests
+                .Where(st => st.TestId == id)
+                .ToList();
+            _dbContext.StudentTests.RemoveRange(previousStudentTests);
+
+            foreach (var studentId in students)
+            {
+                foreach (var question in questions)
+                {
+                    var studentTest = new StudentTest
+                    {
+                        StudentId = studentId,
+                        TestId = test.Id,
+                        QuestionId = question.Id
+                    };
+
+                    _dbContext.StudentTests.Add(studentTest);
+                }
+            }
+
+            _dbContext.SaveChanges();
+
+            return RedirectToAction("Tests", "Teacher", new { Id = test.SubjectId });
+        }
     }
 }
