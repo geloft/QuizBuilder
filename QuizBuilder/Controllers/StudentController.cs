@@ -104,5 +104,30 @@ namespace QuizBuilder.Controllers
 
             return View("SubjectTests", viewModel);
         }
+
+        // GET: Student/StartTest/{id}
+        public async Task<IActionResult> StartTest(int id)
+        {
+            var currentUser = await _userManager.GetUserAsync(User);
+
+            var test = _dbContext.Tests.FirstOrDefault(t => t.Id == id);
+            if (test == null)
+            {
+                return NotFound();
+            }
+
+            // Перевірка доступності тестування за поточний час
+            var now = DateTime.Now;
+            if (now < test.StartTime || now > test.EndTime)
+            {
+                ViewBag.TestAvailability = "Тестування недоступне";
+            }
+            else
+            {
+                ViewBag.TestAvailability = "Розпочати тестування";
+            }
+
+            return View("StartTest", test);
+        }
     }
 }
