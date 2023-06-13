@@ -1,0 +1,81 @@
+﻿@using QuizBuilder.Data.Entities
+@model List<Question>
+
+<h1>Start Algorithm Questions</h1>
+
+@using (Html.BeginForm("ProcessCode", "Student", FormMethod.Post))
+{
+    @Html.AntiForgeryToken()
+
+    @foreach (var question in Model)
+    {
+        <h2>@question.Text</h2>
+
+        <p>Enter your answer:</p>
+        <div>
+            @Html.TextArea("Question_" + question.Id, null, new { rows = 10, cols = 100 })
+        </div>
+
+        <p>Select programming language:</p>
+        <div>
+            <select name="Language_@question.Id" onchange="insertCodeTemplate(this)">
+                <option value="csharp">C#</option>
+                <option value="cpp17">C++</option>
+                <option value="java">Java</option>
+                <option value="python3">Python</option>
+            </select>
+        </div>
+
+        <hr />
+    }
+
+    <input type="submit" value="Submit" class="btn btn-primary" />
+}
+
+@if (!string.IsNullOrEmpty(ViewBag.Output))
+{
+    <h3>Output:</h3>
+    <pre>@ViewBag.Output</pre>
+}
+
+<script>
+    function insertCodeTemplate(select) {
+        var questionId = select.name.replace("Language_", "");
+        var codeTextArea = document.getElementById("Question_" + questionId);
+        var selectedLanguage = select.value;
+        var codeTemplate = getCodeTemplate(selectedLanguage);
+        codeTextArea.value = codeTemplate;
+    }
+
+    function getCodeTemplate(language) {
+        switch (language) {
+            case "csharp":
+                return `using System;
+
+class Program
+{
+    static void Main()
+    {
+        // Your algorithm
+    }
+}`;
+            case "cpp17":
+                return `#include <iostream>
+
+int main() {
+    // Your algorithm
+    return 0;
+}`;
+            case "java":
+                return `public class Program{
+    public static void main(String[] args) {
+         // Your algorithm
+    }
+}`;
+            case "Python":
+                return `# Your algorithm`;
+            default:
+                return "";
+        }
+    }
+</script>

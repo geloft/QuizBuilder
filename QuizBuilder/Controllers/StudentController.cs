@@ -6,6 +6,9 @@ using QuizBuilder.Data;
 using System.Data;
 using QuizBuilder.ViewModels.Student;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
+using System.Text;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace QuizBuilder.Controllers
 {
@@ -258,7 +261,7 @@ namespace QuizBuilder.Controllers
             // Check if the test contains any "Algorithm" questions
             if (studentTest.Test.Questions.Any(q => q.Type == "Algorithm"))
             {
-                return RedirectToAction("StartAlgorithm", new { id = studentTest.Id });
+                return RedirectToAction("StartAlgorithm", new { id = studentTest.TestId });
             }
             else
             {
@@ -266,5 +269,211 @@ namespace QuizBuilder.Controllers
             }
         }
 
+        // GET: Student/StartAlgorithm/{id}
+        public async Task<IActionResult> StartAlgorithm(int id)
+        {
+            var currentUser = await _userManager.GetUserAsync(User);
+
+            var studentTest = _dbContext.StudentTests
+                .Include(st => st.Test)
+                .ThenInclude(t => t.Questions)
+                .ThenInclude(q => q.Options)
+                .FirstOrDefault(st => st.StudentId == currentUser.Id && st.TestId == id);
+
+            if (studentTest == null)
+            {
+                return NotFound();
+            }
+
+            var algorithmQuestions = studentTest.Test.Questions
+                .Where(q => q.Type == "Algorithm")
+                .ToList();
+
+            return View("StartAlgorithm", algorithmQuestions);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> ProcessCode(Dictionary<string, string> questionAnswers, Dictionary<string, string> questionLanguages)
+        {
+            var model = new List<TestAlgorithmViewModel>();
+
+            foreach (var questionAnswer in questionAnswers)
+            {
+                var questionId = questionAnswer.Key.Replace("Question_", "");
+                if (int.TryParse(questionId, out int parsedQuestionId))
+                {
+                    var languageKey = "Language_" + questionId;
+                    var language = questionLanguages.ContainsKey(languageKey) ? questionLanguages[languageKey] : "";
+                    var code = questionAnswer.Value;
+                    var questionModel = new TestAlgorithmViewModel { 
+                    TestId = 0,
+                    QuestionId = parsedQuestionId,
+                    code = code,
+                    language = language
+                    };
+                    var testId = _dbContext.Questions
+                        .Where(q => q.Id == questionModel.QuestionId)
+                        .Select(q => q.TestId)
+                        .FirstOrDefault();
+
+                    questionModel.QuestionId = testId;
+                    model.Add(questionModel);
+                }
+                continue;
+            }
+
+
+
+            var testsPassed = new List<AlgorithmResultViewModel>();
+
+            foreach (var questionModel in model)
+            {
+                var options = _dbContext.Options
+                    .Where(o => o.QuestionId == questionModel.QuestionId)
+                    .ToList();
+
+                var testPassed = new AlgorithmResultViewModel();
+
+                using (var client = new HttpClient()) // Створення нового об'єкта HttpClient
+                {
+                    var request = new HttpRequestMessage
+                    {
+                        Method = HttpMethod.Post,
+                        RequestUri = new Uri("https://online-code-compiler.p.rapidapi.com/v1/"),
+                        Headers =
+                {
+                    { "X-RapidAPI-Key", "cdf60e663cmsh4dc5c0e771235dep1d3b40jsnaec7880ece49" },
+                    { "X-RapidAPI-Host", "online-code-compiler.p.rapidapi.com" },
+                },
+                    };
+                    var request2 = new HttpRequestMessage
+                    {
+                        Method = HttpMethod.Post,
+                        RequestUri = new Uri("https://online-code-compiler.p.rapidapi.com/v1/"),
+                        Headers =
+                {
+                    { "X-RapidAPI-Key", "cdf60e663cmsh4dc5c0e771235dep1d3b40jsnaec7880ece49" },
+                    { "X-RapidAPI-Host", "online-code-compiler.p.rapidapi.com" },
+                },
+                    };
+                    var request3 = new HttpRequestMessage
+                    {
+                        Method = HttpMethod.Post,
+                        RequestUri = new Uri("https://online-code-compiler.p.rapidapi.com/v1/"),
+                        Headers =
+                {
+                    { "X-RapidAPI-Key", "cdf60e663cmsh4dc5c0e771235dep1d3b40jsnaec7880ece49" },
+                    { "X-RapidAPI-Host", "online-code-compiler.p.rapidapi.com" },
+                },
+                    };
+
+                    // Окремий response для тесту 1
+                    var content1 = new StringContent(JsonConvert.SerializeObject(new
+                    {
+                        language = questionModel.language,
+                        version = "latest",
+                        code = questionModel.code,
+                        input = options.ElementAt(1).Text
+                    }), Encoding.UTF8, "application/json");
+
+                    request.Content = content1;
+
+                    using (var response = await client.SendAsync(request))
+                    {
+                        if (!response.IsSuccessStatusCode)
+                        {
+                            throw new HttpRequestException($"The API request was unsuccessful with status code: {response.StatusCode}");
+                        }
+
+                        var body = await response.Content.ReadAsStringAsync();
+
+                        var result = JsonConvert.DeserializeObject<CodeProcessingResult>(body);
+
+                        if (result.output == options.ElementAt(0).Text + "\n")
+                        {
+                            testPassed.testPassed.test1 = "Тест 1. Пройдено";
+                        }
+                        else
+                        {
+                            testPassed.testPassed.test1 = "Тест 1. НЕ ПРОЙДЕНО";
+                        }
+                    }
+
+                    // Окремий response для тесту 2
+                    var content2 = new StringContent(JsonConvert.SerializeObject(new
+                    {
+                        language = questionModel.language,
+                        version = "latest",
+                        code = questionModel.code,
+                        input = options.ElementAt(3).Text
+                    }), Encoding.UTF8, "application/json");
+
+                    request2.Content = content2;
+
+                    using (var response = await client.SendAsync(request2))
+                    {
+                        if (!response.IsSuccessStatusCode)
+                        {
+                            throw new HttpRequestException($"The API request was unsuccessful with status code: {response.StatusCode}");
+                        }
+
+                        var body = await response.Content.ReadAsStringAsync();
+
+                        var result = JsonConvert.DeserializeObject<CodeProcessingResult>(body);
+
+                        if (result.output == options.ElementAt(2).Text + "\n")
+                        {
+                            testPassed.testPassed.test2 = "Тест 2. Пройдено";
+                        }
+                        else
+                        {
+                            testPassed.testPassed.test2 = "Тест 2. НЕ ПРОЙДЕНО";
+                        }
+                    }
+
+                    // Окремий response для тесту 3
+                    var content3 = new StringContent(JsonConvert.SerializeObject(new
+                    {
+                        language = questionModel.language,
+                        version = "latest",
+                        code = questionModel.code,
+                        input = options.ElementAt(5).Text
+                    }), Encoding.UTF8, "application/json");
+
+                    request3.Content = content3;
+
+                    using (var response = await client.SendAsync(request3))
+                    {
+                        if (!response.IsSuccessStatusCode)
+                        {
+                            throw new HttpRequestException($"The API request was unsuccessful with status code: {response.StatusCode}");
+                        }
+
+                        var body = await response.Content.ReadAsStringAsync();
+
+                        var result = JsonConvert.DeserializeObject<CodeProcessingResult>(body);
+
+                        if (result.output == options.ElementAt(4).Text + "\n")
+                        {
+                            testPassed.testPassed.test3 = "Тест 3. Пройдено";
+                        }
+                        else
+                        {
+                            testPassed.testPassed.test3 = "Тест 3. НЕ ПРОЙДЕНО";
+                        }
+                    }
+                }
+                var questionText = await _dbContext.Questions
+                    .Where(q => q.Id == questionModel.QuestionId)
+                    .Select(q => q.Text)
+                    .FirstOrDefaultAsync();
+
+                testPassed.QuestionText = questionText;
+                testPassed.TestId = questionModel.TestId;
+                testsPassed.Add(testPassed);
+            }
+
+            return View("TestAlgorithm", testsPassed);
+        }
     }
 }
