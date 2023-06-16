@@ -4,6 +4,7 @@
     {
         public string QuestionText { get; set; }
         public int TestId { get; set; }
+        public int StudentTestId { get; set; }
         public AlgorithmTestPassed testPassed { get; set; } = new AlgorithmTestPassed();
     }
     public class AlgorithmTestPassed

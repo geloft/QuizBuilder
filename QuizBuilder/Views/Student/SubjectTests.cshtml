@@ -15,7 +15,6 @@ else
                 <th>Назва тестування</th>
                 <th>Початок</th>
                 <th>Кінець</th>
-                <th>Тривалість</th>
                 <th></th>
             </tr>
         </thead>
@@ -26,7 +25,6 @@ else
                     <td>@test.TestName</td>
                     <td>@test.StartTime</td>
                     <td>@test.EndTime</td>
-                    <td>@test.Duration</td>
                     <td><a class="btn btn-primary" asp-action="StartTest" asp-controller="Student" asp-route-id="@test.TestId">Розпочати тестування</a></td>
                 </tr>
             }

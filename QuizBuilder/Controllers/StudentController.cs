@@ -304,11 +304,12 @@ namespace QuizBuilder.Controllers
                     var languageKey = "Language_" + questionId;
                     var language = questionLanguages.ContainsKey(languageKey) ? questionLanguages[languageKey] : "";
                     var code = questionAnswer.Value;
-                    var questionModel = new TestAlgorithmViewModel { 
-                    TestId = 0,
-                    QuestionId = parsedQuestionId,
-                    code = code,
-                    language = language
+                    var questionModel = new TestAlgorithmViewModel
+                    {
+                        TestId = 0,
+                        QuestionId = parsedQuestionId,
+                        code = code,
+                        language = language
                     };
                     var testId = _dbContext.Questions
                         .Where(q => q.Id == questionModel.QuestionId)
@@ -322,7 +323,7 @@ namespace QuizBuilder.Controllers
             }
 
 
-
+            var currentUser = await _userManager.GetUserAsync(User);
             var testsPassed = new List<AlgorithmResultViewModel>();
 
             foreach (var questionModel in model)
@@ -464,7 +465,6 @@ namespace QuizBuilder.Controllers
 
                     if (testPassed.testPassed.test1 == "Тест 1. Пройдено" && testPassed.testPassed.test2 == "Тест 2. Пройдено" && testPassed.testPassed.test3 == "Тест 3. Пройдено")
                     {
-                        var currentUser = await _userManager.GetUserAsync(User);
                         var studentTestId = _dbContext.StudentTests
                             .Where(st => st.StudentId == currentUser.Id && st.TestId == questionModel.TestId)
                             .Select(st => st.Id)
@@ -491,13 +491,106 @@ namespace QuizBuilder.Controllers
                     .Where(q => q.Id == questionModel.QuestionId)
                     .Select(q => q.Text)
                     .FirstOrDefaultAsync();
-
+                testPassed.StudentTestId = _dbContext.StudentTests
+                            .Where(st => st.StudentId == currentUser.Id && st.TestId == questionModel.TestId)
+                            .Select(st => st.Id)
+                            .FirstOrDefault();
                 testPassed.QuestionText = questionText;
                 testPassed.TestId = questionModel.TestId;
                 testsPassed.Add(testPassed);
             }
 
             return View("TestAlgorithm", testsPassed);
+        }
+
+        public async Task<IActionResult> FinishTest(int TestId, int StudentTestId)
+        {
+
+            var test = _dbContext.Tests
+                .Include(t => t.Questions)
+                    .ThenInclude(q => q.Options)
+                .FirstOrDefault(t => t.Id == TestId);
+
+            var studentTest = _dbContext.StudentTests
+                .Include(st => st.Student)
+                .Include(st => st.Question)
+                    .ThenInclude(q => q.Options)
+                .FirstOrDefault(st => st.Id == StudentTestId);
+
+            if (test == null || studentTest == null)
+            {
+                return NotFound();
+            }
+
+
+            float score = 0;
+
+            foreach (var question in test.Questions)
+            {
+                var studentAnswer = _dbContext.StudentAnswers
+                    .FirstOrDefault(sa => sa.StudentTestId == StudentTestId && sa.Option.QuestionId == question.Id);
+
+                if (studentAnswer == null)
+                {
+                    continue;
+                }
+
+                if (question.Type == "SingleChoice" || question.Type == "MultipleChoice")
+                {
+                    foreach (var option in question.Options)
+                    {
+                        if (option.IsCorrect && studentAnswer.OptionId == option.Id)
+                        {
+                            score += question.Score;
+                        }
+                        else if (!option.IsCorrect && studentAnswer.OptionId == option.Id)
+                        {
+                            score -= 1;
+                        }
+                    }
+                }
+                else if (question.Type == "Matching")
+                {
+                    int matchingOptionsCount = question.Options.Count;
+
+                    foreach (var option in question.Options)
+                    {
+                        if (int.TryParse(option.Text, out int number) && number == (option.Id + 1))
+                        {
+                            score += question.Score / matchingOptionsCount;
+                        }
+                    }
+                }
+                else if (question.Type == "Algorithm")
+                {
+                    if (studentAnswer.Text == "Passed")
+                    {
+                        score += question.Score;
+                    }
+                }
+            }
+
+
+            var testResult = new TestResult
+            {
+                TestId = TestId,
+                StudentId = studentTest.StudentId,
+                Score = score
+            };
+
+            _dbContext.TestResults.Add(testResult);
+            _dbContext.SaveChanges();
+
+            return RedirectToAction("Index", "Home");
+        }
+        public async Task<IActionResult> Results()
+        {
+            var results = await _dbContext.TestResults
+                .Include(tr => tr.Test)
+                .ThenInclude(t => t.Subject)
+                .ToListAsync();
+
+            return View(results);
         }
     }
 }

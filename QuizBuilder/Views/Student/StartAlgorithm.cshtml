@@ -1,7 +1,6 @@
 ﻿@using QuizBuilder.Data.Entities
 @model List<Question>
 
-<h1>Start Algorithm Questions</h1>
 
 @using (Html.BeginForm("ProcessCode", "Student", FormMethod.Post))
 {
@@ -11,12 +10,12 @@
     {
         <h2>@question.Text</h2>
 
-        <p>Enter your answer:</p>
+        <p>Напишіть код який реалізує дане завдання:</p>
         <div>
             @Html.TextArea("Question_" + question.Id, null, new { rows = 10, cols = 100 })
         </div>
 
-        <p>Select programming language:</p>
+        <p>Вибір мови програмування:</p>
         <div>
             <select name="Language_@question.Id" onchange="insertCodeTemplate(this)">
                 <option value="csharp">C#</option>
@@ -29,7 +28,7 @@
         <hr />
     }
 
-    <input type="submit" value="Submit" class="btn btn-primary" />
+    <input type="submit" value="Далі" class="btn btn-primary" />
 }
 
 @if (!string.IsNullOrEmpty(ViewBag.Output))
