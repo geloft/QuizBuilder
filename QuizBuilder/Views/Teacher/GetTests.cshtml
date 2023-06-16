@@ -1,0 +1,45 @@
+﻿@using QuizBuilder.Data.Entities
+@model List<Subject>
+
+<h2>Список предметів та тестувань</h2>
+
+@foreach (var subject in Model)
+{
+    <h3>@subject.Name</h3>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>
+                    Назва тестування
+                </th>
+                <th>
+                    Початок
+                </th>
+                <th>
+                    Кінець
+                </th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var test in subject.Tests)
+            {
+                <tr>
+                    <td>
+                        @test.Name
+                    </td>
+                    <td>
+                        @test.StartTime
+                    </td>
+                    <td>
+                        @test.EndTime
+                    </td>
+                    <td>
+                        <a class="btn btn-primary" asp-controller="Test" asp-action="Index" asp-route-id="@test.Id">Налаштування</a>
+                        <a class="btn btn-primary" asp-controller="Teacher" asp-action="GenerateQuestions" asp-route-id="@test.Id">Згенерувати тестування</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}

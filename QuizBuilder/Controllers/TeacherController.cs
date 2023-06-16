@@ -285,7 +285,6 @@ namespace QuizBuilder.Controllers
                     Name = viewModel.Name,
                     StartTime = viewModel.StartTime,
                     EndTime = viewModel.EndTime,
-                    Duration = viewModel.Duration,
                     SubjectId = viewModel.SubjectId
                 };
 
@@ -343,6 +342,12 @@ namespace QuizBuilder.Controllers
             _dbContext.SaveChanges();
 
             return RedirectToAction("Tests", "Teacher", new { Id = test.SubjectId });
+        }
+
+        public async Task<IActionResult> GetTests()
+        {
+            var subjects = _dbContext.Subjects.Include(s => s.Tests).ToList();
+            return View(subjects);
         }
     }
 }

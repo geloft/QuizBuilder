@@ -64,6 +64,7 @@ namespace QuizBuilder.Controllers
                 {
                     Text = viewModel.Text,
                     Type = viewModel.Type,
+                    Score = viewModel.Score,
                     TestId = viewModel.TestId
                 };
 
@@ -117,6 +118,7 @@ namespace QuizBuilder.Controllers
 
                 // Update question text
                 question.Text = viewModel.Text;
+                question.Score = viewModel.Score;
 
                 // Update options based on question type
                 switch (viewModel.Type)

@@ -7,6 +7,7 @@ namespace QuizBuilder.ViewModels.Test
     {
         public int QuestionId { get; set; }
         public int TestId { get; set; }
+        public int Score { get; set; }
 
         [Required(ErrorMessage = "The Text field is required.")]
         public string Text { get; set; }

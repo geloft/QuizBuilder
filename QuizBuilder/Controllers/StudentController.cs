@@ -98,8 +98,7 @@ namespace QuizBuilder.Controllers
                     TestId = test.Id,
                     TestName = test.Name,
                     StartTime = test.StartTime,
-                    EndTime = test.EndTime,
-                    Duration = test.Duration
+                    EndTime = test.EndTime
                 };
 
                 viewModel.Add(testViewModel);
@@ -316,7 +315,7 @@ namespace QuizBuilder.Controllers
                         .Select(q => q.TestId)
                         .FirstOrDefault();
 
-                    questionModel.QuestionId = testId;
+                    questionModel.TestId = testId;
                     model.Add(questionModel);
                 }
                 continue;
@@ -461,6 +460,31 @@ namespace QuizBuilder.Controllers
                         {
                             testPassed.testPassed.test3 = "Тест 3. НЕ ПРОЙДЕНО";
                         }
+                    }
+
+                    if (testPassed.testPassed.test1 == "Тест 1. Пройдено" && testPassed.testPassed.test2 == "Тест 2. Пройдено" && testPassed.testPassed.test3 == "Тест 3. Пройдено")
+                    {
+                        var currentUser = await _userManager.GetUserAsync(User);
+                        var studentTestId = _dbContext.StudentTests
+                            .Where(st => st.StudentId == currentUser.Id && st.TestId == questionModel.TestId)
+                            .Select(st => st.Id)
+                            .FirstOrDefault();
+
+                        var existingAnswers = _dbContext.StudentAnswers
+                            .Where(sa => sa.StudentTestId == studentTestId && sa.OptionId == options.First().Id)
+                            .ToList();
+
+                        _dbContext.StudentAnswers.RemoveRange(existingAnswers);
+
+                        var studentAnswer = new StudentAnswer
+                        {
+                            StudentTestId = studentTestId,
+                            OptionId = options.First().Id,
+                            Text = "Passed"
+                        };
+
+                        _dbContext.StudentAnswers.Add(studentAnswer);
+                        _dbContext.SaveChanges();
                     }
                 }
                 var questionText = await _dbContext.Questions
