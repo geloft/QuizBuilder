@@ -16,30 +16,30 @@
     }
 </style>
 
-<h2>Search Users</h2>
+<h2>Пошук користувачів</h2>
 
 @using (Html.BeginForm("Search", "Admin"))
 {
-    <label for="email">Email:</label>
+    <label for="email">Електронна пошта:</label>
     <input type="text" name="email" />
-    <input type="submit" value="Search" />
+    <input type="submit" value="Пошук" />
 }
 
 @if (!string.IsNullOrEmpty(Model))
 {
-    <h3>Search Results:</h3>
-    <p>Email: @Model</p>
-    <a href="@Url.Action("AssignRole", "Admin", new { userId = Model })">Assign Role</a>
+    <h3>Результати пошуків:</h3>
+    <p>Електорна пошта: @Model</p>
+    <a class="btn btn-primary" href="@Url.Action("AssignRole", "Admin", new { userId = Model })">Змінити роль</a>
 }
 
-<<h3>All Users and Roles:</h3>
+<h3>Всі користувачі та їх ролі:</h3>
 <table>
     <tr>
-        <th>Email</th>
-        <th>First Name</th>
-        <th>Last Name</th>
-        <th>Role</th>
-        <th>Action</th>
+        <th>Електорна пошта</th>
+        <th>Ім'я користувача</th>
+        <th>Прізвище користувача</th>
+        <th>Роль</th>
+        <th></th>
     </tr>
     @foreach (var user in ViewBag.Users)
     {
@@ -49,7 +49,7 @@
             <td>@user.LastName</td>
             <td>@string.Join(", ", await ((UserManager<ApplicationUser>)ViewBag.UserManager).GetRolesAsync(user))</td>
             <td>
-                <a href="@Url.Action("AssignRole", "Admin", new { userId = user.Id })">Assign Role</a>
+                <a class="btn btn-primary" href="@Url.Action("AssignRole", "Admin", new { userId = user.Id })">Змінити роль</a>
             </td>
         </tr>
         <tr style="border-bottom: 1px solid #ccc;"></tr>

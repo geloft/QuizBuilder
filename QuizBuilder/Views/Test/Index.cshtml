@@ -27,11 +27,34 @@
                     @Html.DisplayFor(modelItem => question.Text)
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => question.Type)
+                    @if (question.Type == "SingleChoice")
+                    {
+                        <h6>Одиночний вибір</h6>
+                    }
+                    else if (question.Type == "MultipleChoice")
+                    {
+                        <h6>Множинний вибір</h6>
+                    }
+                    else if (question.Type == "Matching")
+                    {
+                        <h6>Відповідність</h6>
+                    }
+                    else if (question.Type == "Open")
+                    {
+                        <h6>Відкрите</h6>
+                    }
+                    else if (question.Type == "Algorithm")
+                    {
+                        <h6>Алгоритмічне</h6>
+                    }
+                    else
+                    {
+                        @Html.Display(question.Type)
+                    }
                 </td>
                 <td>
                     <a class="btn btn-primary" asp-controller="Test" asp-action="EditQuestion" asp-route-questionId="@question.Id">Редагувати</a>
-                    <a class="btn btn-danger mt-2" asp-controller="Test" asp-action="DeleteQuestion" asp-route-id="@question.Id">Видалити</a>
+                    <a class="btn btn-danger" asp-controller="Test" asp-action="DeleteQuestion" asp-route-id="@question.Id">Видалити</a>
                 </td>
             </tr>
         }

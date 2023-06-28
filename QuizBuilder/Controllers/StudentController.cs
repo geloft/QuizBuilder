@@ -578,10 +578,13 @@ namespace QuizBuilder.Controllers
                 Score = score
             };
 
+            var removeTests = _dbContext.TestResults.Where(x => x.TestId == testResult.TestId);
+
+            _dbContext.TestResults.RemoveRange(removeTests);
             _dbContext.TestResults.Add(testResult);
             _dbContext.SaveChanges();
 
-            return RedirectToAction("Index", "Home");
+            return RedirectToAction("Results", "Student");
         }
         public async Task<IActionResult> Results()
         {

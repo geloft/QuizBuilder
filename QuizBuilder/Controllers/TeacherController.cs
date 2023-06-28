@@ -1,15 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using QuizBuilder.Data;
 using QuizBuilder.Data.Entities;
-using QuizBuilder.ViewModels;
 using QuizBuilder.ViewModels.Subject;
 using QuizBuilder.ViewModels.Test;
 
