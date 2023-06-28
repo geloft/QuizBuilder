@@ -1,0 +1,29 @@
+﻿@using QuizBuilder.Data.Entities
+@model IEnumerable<TestResult>
+
+@{
+    ViewData["Title"] = "Results";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1>Оцінки</h1>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Предмет</th>
+            <th>Тест</th>
+            <th>Оцінка</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var result in Model)
+        {
+            <tr>
+                <td>@result.Test.Subject.Name</td>
+                <td>@result.Test.Name</td>
+                <td>@result.Score</td>
+            </tr>
+        }
+    </tbody>
+</table>

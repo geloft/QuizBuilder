@@ -1,0 +1,67 @@
+﻿@model List<QuizBuilder.Data.Entities.Question>
+
+@{
+    ViewData["Title"] = "Questions";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1>Список запитань для тесту: @ViewData["TestName"]</h1>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                Текст питання
+            </th>
+            <th>
+                Тип питання
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var question in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => question.Text)
+                </td>
+                <td>
+                    @if (question.Type == "SingleChoice")
+                    {
+                        <h6>Одиночний вибір</h6>
+                    }
+                    else if (question.Type == "MultipleChoice")
+                    {
+                        <h6>Множинний вибір</h6>
+                    }
+                    else if (question.Type == "Matching")
+                    {
+                        <h6>Відповідність</h6>
+                    }
+                    else if (question.Type == "Open")
+                    {
+                        <h6>Відкрите</h6>
+                    }
+                    else if (question.Type == "Algorithm")
+                    {
+                        <h6>Алгоритмічне</h6>
+                    }
+                    else
+                    {
+                        @Html.Display(question.Type)
+                    }
+                </td>
+                <td>
+                    <a class="btn btn-primary" asp-controller="Test" asp-action="EditQuestion" asp-route-questionId="@question.Id">Редагувати</a>
+                    <a class="btn btn-danger" asp-controller="Test" asp-action="DeleteQuestion" asp-route-id="@question.Id">Видалити</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<div>
+    <a class="btn btn-primary" asp-controller="Test" asp-action="CreateQuestion" asp-route-id="@ViewData["TestId"]">Додати запитання</a>
+    <a class="btn btn-secondary" asp-controller="Teacher" asp-action="Tests" asp-route-id="@ViewData["SubjectId"]">Повернутися до списку тестувань</a>
+</div>

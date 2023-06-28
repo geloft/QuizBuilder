@@ -1,16 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using QuizBuilder.Data;
 using QuizBuilder.Data.Entities;
-using QuizBuilder.ViewModels;
 using QuizBuilder.ViewModels.Subject;
+using QuizBuilder.ViewModels.Test;
 
 namespace QuizBuilder.Controllers
 {
@@ -39,7 +34,6 @@ namespace QuizBuilder.Controllers
 
             return View(subjects);
         }
-
 
         // GET: Teacher/Details/5
         public async Task<IActionResult> Details(int? id)
@@ -86,7 +80,6 @@ namespace QuizBuilder.Controllers
 
             return RedirectToAction("Details", new { id = subjectId });
         }
-
 
         // GET: Teacher/Create
         public IActionResult Create()
@@ -242,6 +235,113 @@ namespace QuizBuilder.Controllers
         private bool SubjectExists(int id)
         {
             return (_dbContext.Subjects?.Any(e => e.Id == id)).GetValueOrDefault();
+        }
+
+        // GET: Teacher/Tests/5
+        public async Task<IActionResult> Tests(int id)
+        {
+            var subject = await _dbContext.Subjects.FindAsync(id);
+
+            if (subject == null)
+            {
+                return NotFound();
+            }
+
+            var tests = await _dbContext.Tests
+                .Where(t => t.SubjectId == id)
+                .ToListAsync();
+
+            ViewData["SubjectId"] = id;
+
+            return View(tests);
+        }
+
+        // GET: Teacher/CreateTest
+        public IActionResult CreateTest(int subjectId)
+        {
+            var viewModel = new TestCreateViewModel
+            {
+                SubjectId = subjectId
+            };
+
+            return View(viewModel);
+        }
+
+        // POST: Teacher/CreateTest
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CreateTest(TestCreateViewModel viewModel)
+        {
+            if (ModelState.IsValid)
+            {
+                var test = new Test
+                {
+                    Name = viewModel.Name,
+                    StartTime = viewModel.StartTime,
+                    EndTime = viewModel.EndTime,
+                    SubjectId = viewModel.SubjectId
+                };
+
+                _dbContext.Tests.Add(test);
+                await _dbContext.SaveChangesAsync();
+
+                return RedirectToAction("Tests", new { id = viewModel.SubjectId });
+            }
+
+            return View(viewModel);
+        }
+
+        // GET: Teacher/GenerateQuestions/{id}
+        public IActionResult GenerateQuestions(int id)
+        {
+            var test = _dbContext.Tests.FirstOrDefault(t => t.Id == id);
+            if (test == null)
+            {
+                return NotFound();
+            }
+
+            var subject = _dbContext.Subjects
+                .Include(s => s.SubjectStudents)
+                .FirstOrDefault(s => s.Id == test.SubjectId);
+            if (subject == null)
+            {
+                return NotFound();
+            }
+
+            var students = subject.SubjectStudents.Select(s => s.StudentId).ToList();
+
+            var questions = _dbContext.Questions.Where(q => q.TestId == id).ToList();
+
+            // Remove previous StudentTest entries
+            var previousStudentTests = _dbContext.StudentTests
+                .Where(st => st.TestId == id)
+                .ToList();
+            _dbContext.StudentTests.RemoveRange(previousStudentTests);
+
+            foreach (var studentId in students)
+            {
+                foreach (var question in questions)
+                {
+                    var studentTest = new StudentTest
+                    {
+                        StudentId = studentId,
+                        TestId = test.Id,
+                        QuestionId = question.Id
+                    };
+
+                    _dbContext.StudentTests.Add(studentTest);
+                }
+            }
+
+            _dbContext.SaveChanges();
+
+            return RedirectToAction("Tests", "Teacher", new { Id = test.SubjectId });
+        }
+
+        public async Task<IActionResult> GetTests()
+        {
+            var subjects = _dbContext.Subjects.Include(s => s.Tests).ToList();
+            return View(subjects);
         }
     }
 }

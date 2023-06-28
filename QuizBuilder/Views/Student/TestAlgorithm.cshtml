@@ -1,0 +1,61 @@
+﻿@using QuizBuilder.ViewModels.Student
+@model List<AlgorithmResultViewModel>
+
+<h2>Результати проходження тестів</h2>
+
+@foreach (var result in Model)
+{
+    <h3>@result.QuestionText</h3>
+    <p>
+        @if (@result.testPassed.test1 == "Тест 1. Пройдено")
+        {
+            <span style="color: green">&#10004;</span>
+            @result.testPassed.test1
+        }
+        else if (@result.testPassed.test1 == "Тест 1. НЕ ПРОЙДЕНО")
+        {
+            <span style="color: red">&#10008;</span>
+            @result.testPassed.test1
+        }
+        else
+        {
+            @result.testPassed.test1
+        }
+    </p>
+    <p>
+        @if (@result.testPassed.test2 == "Тест 2. Пройдено")
+        {
+            <span style="color: green">&#10004;</span>
+            @result.testPassed.test2
+        }
+        else if (@result.testPassed.test2 == "Тест 2. НЕ ПРОЙДЕНО")
+        {
+            <span style="color: red">&#10008;</span>
+            @result.testPassed.test2
+        }
+        else
+        {
+            @result.testPassed.test2
+        }
+    </p>
+    <p>
+        @if (@result.testPassed.test3 == "Тест 3. Пройдено")
+        {
+            <span style="color: green">&#10004;</span>
+            @result.testPassed.test3
+        }
+        else if (@result.testPassed.test3 == "Тест 3. НЕ ПРОЙДЕНО")
+        {
+            <span style="color: red">&#10008;</span>
+            @result.testPassed.test3
+        }
+        else
+        {
+            @result.testPassed.test3
+        }
+    </p>
+    <hr />
+}
+
+<a class="btn btn-primary" asp-action="StartAlgorithm" asp-controller="Student" asp-route-id="@Model.First().TestId">Повернутись до алгоритмів</a>
+<a class="btn btn-primary" asp-action="FinishTest" asp-controller="Student" asp-route-TestId="@Model.First().TestId" asp-route-StudentTestId="@Model.First().StudentTestId">Завершити тестування</a>

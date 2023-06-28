@@ -1,0 +1,38 @@
+﻿@model QuizBuilder.ViewModels.Test.QuestionCreateViewModel
+
+@{
+    ViewData["Title"] = "Create Question";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1>Створення нового запитання</h1>
+
+@using (Html.BeginForm())
+{
+    <div class="form-group">
+        <label asp-for="Text" class="control-label">Текст питання:</label>
+        <textarea asp-for="Text" class="form-control"></textarea>
+        <span asp-validation-for="Text" class="text-danger"></span>
+    </div>
+
+    <div class="form-group col-md-2">
+        <label asp-for="Type" class="control-label">Тип питання:</label>
+        <select asp-for="Type" class="form-control">
+            <option value="SingleChoice">Одиночний вибір</option>
+            <option value="MultipleChoice">Множинний вибір</option>
+            <option value="Matching">Відповідність</option>
+            <option value="Open">Відкрите</option>
+            <option value="Algorithm">Алгоритмічне</option>
+        </select>
+        <span asp-validation-for="Type" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <input type="hidden" asp-for="TestId" />
+    </div>
+
+    <div class="form-group">
+        <input type="submit" value="Створити" class="btn btn-primary" />
+        <a asp-action="Index" asp-route-id="@Model.TestId" class="btn btn-secondary">Повернутися до списку запитань</a>
+    </div>
+}

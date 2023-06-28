@@ -1,0 +1,51 @@
+﻿@model IEnumerable<QuizBuilder.Data.Entities.Test>
+
+@{
+    ViewData["Title"] = "Tests";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1>Список тестувань</h1>
+<p>
+    <a class="btn btn-primary" asp-action="CreateTest" asp-route-subjectId="@ViewData["SubjectId"]">Створити тестування</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                Назва тестування
+            </th>
+            <th>
+                Початок
+            </th>
+            <th>
+                Кінець
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var test in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => test.Name)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => test.StartTime)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => test.EndTime)
+                </td>
+                <td>
+                    <a class="btn btn-primary" asp-controller="Test" asp-action="Index" asp-route-id="@test.Id">Налаштування</a>
+                    <a class="btn btn-primary" asp-controller="Teacher" asp-action="GenerateQuestions" asp-route-id="@test.Id">Згенерувати тестування</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<div>
+    <a class="btn btn-secondary" asp-action="Index">Повернутися до списку предметів</a>
+</div>

@@ -1,0 +1,14 @@
+﻿@using QuizBuilder.Data.Entities
+@model Test
+
+<h1>Тестування</h1>
+
+@if (!string.IsNullOrEmpty(ViewBag.TestAvailability))
+{
+        <p>@ViewBag.TestAvailability</p>
+}
+
+@if (DateTime.Now >= Model.StartTime && DateTime.Now <= Model.EndTime)
+{
+        <a class="btn btn-primary" asp-action="StartQuestions" asp-controller="Student" asp-route-id="@Model.Id">Розпочати тестування</a>
+}

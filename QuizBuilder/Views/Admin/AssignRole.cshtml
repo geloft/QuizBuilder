@@ -1,11 +1,11 @@
 ﻿@using QuizBuilder.Data.Entities
 @model ApplicationUser
 
-<h2>Assign Role</h2>
+<h2>Призначення ролі</h2>
 
-<p>Email: @Model.Email</p>
-<p>First Name: @Model.FirstName</p>
-<p>Last Name: @Model.LastName</p>
+<p>Електронна пошта: @Model.Email</p>
+<p>Ім'я користувача: @Model.FirstName</p>
+<p>Прізвище користувача: @Model.LastName</p>
 
 @using (Html.BeginForm("AssignRole", "Admin"))
 {
@@ -16,5 +16,5 @@
            <option value="@role.Name" selected="@((role.Name == ViewBag.CurrentRole).ToString().ToLower())">@role.Name</option>
         }
     </select>
-    <input type="submit" value="Assign" />
+    <input type="submit" value="Змінити роль" />
 }

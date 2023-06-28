@@ -24,17 +24,29 @@
                             <li class="nav-item">
                                 <a class="nav-link text-dark" asp-area="" asp-controller="Teacher" asp-action="Index">Мої предмети</a>
                             </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Teacher" asp-action="GetTests">Тестування</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Teacher" asp-action="Index">Оцінювання тестувань</a>
+                            </li>
                         }
                         @if (User.IsInRole("Student"))
                         {
                             <li class="nav-item">
                                 <a class="nav-link text-dark" asp-area="" asp-controller="Student" asp-action="Index">Мої предмети</a>
                             </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Student" asp-action="Index">Тестування</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Student" asp-action="Results">Мої оцінки</a>
+                            </li>
                         }
                         @if (User.IsInRole("Admin"))
                         {
                             <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Admin" asp-action="Search">UsersManagment</a>
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Admin" asp-action="Search">Керування ролями</a>
                             </li>
                         }
                     </ul>
